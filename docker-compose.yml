@@ -32,6 +32,27 @@ services:
       start_period: 60s
     restart: unless-stopped
 
+  adminer:
+    image: adminer:latest
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`adminer.python.llp`)"
+      - "traefik.http.routers.adminer.service=adminer"
+      - "traefik.http.routers.adminer.entrypoints=websecure"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+      - "traefik.http.routers.adminer.tls=true"
+      - "traefik.http.routers.adminer.tls.certresolver=letsencrypt"
+      - "traefik.http.services.adminer.loadbalancer.passhostheader=true"
+      - "traefik.http.routers.adminer.middlewares=compresstraefik"
+      - "traefik.http.middlewares.compresstraefik.compress=true"
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+
   joomla:
     # Image tag (replace with yours)
     image: joomla:4.1
@@ -54,7 +75,7 @@ services:
     labels:
       - "traefik.enable=true"
       # Joomla URL (replace with yours)
-      - "traefik.http.routers.joomla.rule=Host(`joomla.domain.ex`)"
+      - "traefik.http.routers.joomla.rule=Host(`joomla.python.llp`)"
       - "traefik.http.routers.joomla.service=joomla"
       - "traefik.http.routers.joomla.entrypoints=websecure"
       - "traefik.http.services.joomla.loadbalancer.server.port=80"
@@ -92,7 +113,7 @@ services:
     labels:
       - "traefik.enable=true"
       # Joomla URL (replace with yours)
-      - "traefik.http.routers.joomla2.rule=Host(`joomla2.domain.ex`)"
+      - "traefik.http.routers.joomla2.rule=Host(`joomla2.python.llp`)"
       - "traefik.http.routers.joomla2.service=joomla2"
       - "traefik.http.routers.joomla2.entrypoints=websecure"
       - "traefik.http.services.joomla2.loadbalancer.server.port=80"
@@ -126,7 +147,7 @@ services:
       - "--providers.docker.exposedByDefault=false"
       - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
       # Email for Let's Encrypt (replace with yours)
-      - "--certificatesresolvers.letsencrypt.acme.email=mail@mail.com"
+      - "--certificatesresolvers.letsencrypt.acme.email=karlutxo@gmail.com"
       - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
       - "--metrics.prometheus=true"
       - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
@@ -147,7 +168,7 @@ services:
     labels:
       - "traefik.enable=true"
       # Traefik URL (replace with yours)
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.domain.ex`)"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.python.llp`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
